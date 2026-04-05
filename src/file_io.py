@@ -54,13 +54,17 @@ def load_function_definitions(path: str) -> List[FunctionDefinition]:
     definitions: List[FunctionDefinition] = []
     for i, item in enumerate(raw):
         if not isinstance(item, dict):
-            print(f"[ERROR] Item {i} in '{path}' is not an object.", file=sys.stderr)
+            print(
+                f"[ERROR] Item {i} in '{path}' is not an object.",
+                file=sys.stderr
+            )
             sys.exit(1)
         try:
             definitions.append(FunctionDefinition.model_validate(item))
         except Exception as e:
             print(
-                f"[ERROR] Could not parse function definition at index {i}: {e}",
+                "[ERROR] Could not parse function definition ",
+                f"at index {i}: {e}",
                 file=sys.stderr,
             )
             sys.exit(1)
@@ -83,12 +87,18 @@ def load_prompts(path: str) -> List[Prompt]:
     prompts: List[Prompt] = []
     for i, item in enumerate(raw):
         if not isinstance(item, dict):
-            print(f"[ERROR] Item {i} in '{path}' is not an object.", file=sys.stderr)
+            print(
+                f"[ERROR] Item {i} in '{path}' is not an object.",
+                file=sys.stderr
+            )
             continue
         try:
             prompts.append(Prompt.model_validate(item))
         except Exception as e:
-            print(f"[WARNING] Skipping prompt at index {i}: {e}", file=sys.stderr)
+            print(
+                f"[WARNING] Skipping prompt at index {i}: {e}",
+                file=sys.stderr
+            )
     return prompts
 
 

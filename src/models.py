@@ -13,7 +13,8 @@ class ParameterDefinition(BaseModel):
     @classmethod
     def validate_type(cls, v: str) -> str:
         """Validate that type is a known JSON Schema type."""
-        allowed = {"number", "string", "boolean", "integer", "array", "object", "null"}
+        allowed = {"number", "string", "boolean", "integer",
+                   "array", "object", "null"}
         if v not in allowed:
             raise ValueError(f"Unknown type '{v}'. Allowed: {allowed}")
         return v

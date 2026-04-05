@@ -18,10 +18,6 @@ except ImportError:
     Small_LLM_Model = None
 
 
-# ---------------------------------------------------------------------------
-# Vocabulary helpers
-# ---------------------------------------------------------------------------
-
 def load_vocabulary(model: Any) -> Dict[int, str]:
     """Load the token-id -> string mapping from the model's vocabulary file.
 
@@ -52,7 +48,10 @@ def load_vocabulary(model: Any) -> Dict[int, str]:
     try:
         vocab_path: str = model.get_path_to_vocab_file()
     except Exception as e:
-        print(f"[ERROR] Could not get vocabulary file path: {e}", file=sys.stderr)
+        print(
+            f"[ERROR] Could not get vocabulary file path: {e}",
+            file=sys.stderr
+        )
         sys.exit(1)
 
     try:
@@ -104,7 +103,7 @@ def _load_vocab_from_tokenizer_json(path: str) -> Dict[int, str]:
             if isinstance(token_id, int):
                 vocab[token_id] = token_str
 
-    # Also pull added_tokens (special tokens) which may not appear in model.vocab
+    # Also pull added_tokens which may not appear in model.vocab
     for entry in data.get("added_tokens", []):
         tid = entry.get("id")
         content = entry.get("content", "")
@@ -114,15 +113,11 @@ def _load_vocab_from_tokenizer_json(path: str) -> Dict[int, str]:
     return vocab
 
 
-# ---------------------------------------------------------------------------
-# JSON Schema state machine
-# ---------------------------------------------------------------------------
-
 class JSONSchemaStateMachine:
     """Tracks parsing state for a JSON object matching a known schema.
 
     The state machine enforces:
-    - The top-level structure is ``{"function_name": "...", "arguments": {...}}``
+    - The structure is ``{"function_name": "...", "arguments": {...}}``
     - ``function_name`` must be one of the allowed names.
     - ``arguments`` is an object whose keys and value types come from the
       selected function's parameter definitions.
@@ -167,7 +162,7 @@ class JSONSchemaStateMachine:
         Args:
             allowed_function_names: Names the function_name field may take.
             function_parameters: Maps each function name to its parameter
-                definitions, e.g. ``{"fn_add": {"a": "number", "b": "number"}}``.
+             definitions, e.g. ``{"fn_add": {"a": "number", "b": "number"}}``.
         """
         self.allowed_function_names = allowed_function_names
         self.function_parameters = function_parameters
@@ -229,7 +224,9 @@ class JSONSchemaStateMachine:
                 return set()
             next_chars: Set[str] = set()
             for c in completions:
-                next_chars.add(c[len(self.buffer)] if len(c) > len(self.buffer) else '"')
+                next_chars.add(
+                    c[len(self.buffer)] if len(c) > len(self.buffer) else '"'
+                )
             # Always allow closing quote when buffer exactly matches a key
             if self.buffer in ["function_name", "arguments"]:
                 next_chars.add('"')
@@ -291,7 +288,9 @@ class JSONSchemaStateMachine:
             param_names = list(
                 self.function_parameters.get(self.chosen_function, {}).keys()
             )
-            remaining = [k for k in param_names if k not in self.collected_args]
+            remaining = [
+                k for k in param_names if k not in self.collected_args
+            ]
             completions = self._completions_for_buffer(self.buffer, remaining)
             next_chars_ak: Set[str] = set()
             for c in completions:
@@ -320,7 +319,7 @@ class JSONSchemaStateMachine:
         if s == self.ST_IN_ARG_STR:
             if self._arg_str_escape:
                 return set('"\\nrtbf/')
-            # allow any printable except unescaped control chars; closing quote allowed
+            # allow any printable except unescaped control chars;
             allowed_str: Set[str] = set()
             for code in range(32, 127):
                 allowed_str.add(chr(code))
@@ -570,7 +569,10 @@ class JSONSchemaStateMachine:
                 # Terminator reached — store value
                 try:
                     num_val: Any
-                    if "." in self.buffer or "e" in self.buffer or "E" in self.buffer:
+                    if (
+                        "." in self.buffer
+                            or "e" in self.buffer
+                            or "E" in self.buffer):
                         num_val = float(self.buffer)
                     else:
                         num_val = int(self.buffer)
@@ -623,11 +625,11 @@ class JSONSchemaStateMachine:
             else:
                 self.state = self.ST_ERROR
 
-    # ------------------------------------------------------------------
-    # Internal helpers
-    # ------------------------------------------------------------------
-
-    def _completions_for_buffer(self, buf: str, candidates: List[str]) -> List[str]:
+    def _completions_for_buffer(
+            self,
+            buf: str,
+            candidates: List[str]
+    ) -> List[str]:
         """Return candidates whose prefix matches buf."""
         return [c for c in candidates if c.startswith(buf)]
 
@@ -651,10 +653,6 @@ class JSONSchemaStateMachine:
             self.collected_args[self.current_arg_key] = value
             self.current_arg_key = None
 
-
-# ---------------------------------------------------------------------------
-# Constrained generation
-# ---------------------------------------------------------------------------
 
 def _get_valid_token_ids(
     sm: JSONSchemaStateMachine,
@@ -735,9 +733,9 @@ def generate_constrained(
         if sm.is_done() or sm.is_error():
             break
 
-        # get_logits_from_input_ids expects a plain list[int] and returns list[float]
         try:
-            logits_list: List[float] = model.get_logits_from_input_ids(current_ids)
+            logits_list: List[float] = (
+                model.get_logits_from_input_ids(current_ids))
         except Exception as e:
             print(f"[ERROR] LLM inference failed: {e}", file=sys.stderr)
             break
@@ -751,7 +749,8 @@ def generate_constrained(
             # No valid continuation — stop
             break
 
-        # Mask invalid tokens: build a list with -inf everywhere, then copy valid scores
+        # Mask invalid tokens: build a list with -inf everywhere,
+        # then copy valid scores
         NEG_INF = float("-inf")
         masked: List[float] = [NEG_INF] * vocab_size
         for tid in valid_ids:

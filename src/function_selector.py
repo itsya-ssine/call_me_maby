@@ -95,7 +95,8 @@ def select_function(
     user_query: str,
     functions: List[FunctionDefinition],
 ) -> Optional[FunctionCall]:
-    """Use the LLM with constrained decoding to select a function and extract args.
+    """Use the LLM with constrained decoding
+    to select a function and extract args.
 
     Args:
         model: Small_LLM_Model instance.
@@ -169,7 +170,10 @@ def select_function(
     raw_args: Dict[str, Any] = result["arguments"]
 
     # Coerce each argument to its declared type
-    fn_def_map: Dict[str, FunctionDefinition] = {fn.name: fn for fn in functions}
+    fn_def_map: Dict[str, FunctionDefinition] = {
+        fn.name: fn
+        for fn in functions
+    }
     fn_def = fn_def_map.get(chosen_fn_name)
     coerced_args: Dict[str, Any] = {}
 

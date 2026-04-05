@@ -17,10 +17,6 @@ from src.function_selector import select_function
 from src.models import AppConfig, FunctionCall
 
 
-# ---------------------------------------------------------------------------
-# LLM loader
-# ---------------------------------------------------------------------------
-
 def _load_model(model_name: str) -> Any:
     """Attempt to load the Small_LLM_Model from llm_sdk.
 
@@ -38,19 +34,17 @@ def _load_model(model_name: str) -> Any:
         return model
     except ImportError:
         print(
-            "[ERROR] llm_sdk package not found.  "
-            "Place the llm_sdk directory next to the src directory.",
+            "[ERROR] llm_sdk package not found.  ",
             file=sys.stderr,
         )
         return None
     except Exception as e:
-        print(f"[ERROR] Failed to load model '{model_name}': {e}", file=sys.stderr)
+        print(
+            f"[ERROR] Failed to load model '{model_name}': {e}",
+            file=sys.stderr
+        )
         return None
 
-
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
 
 def _parse_args() -> AppConfig:
     """Parse command-line arguments.
@@ -89,10 +83,6 @@ def _parse_args() -> AppConfig:
         model_name=args.model,
     )
 
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
 
 def main() -> int:
     """Run the function-calling pipeline.
