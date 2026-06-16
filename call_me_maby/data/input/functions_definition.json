@@ -1,0 +1,44 @@
+[
+  {
+    "name": "fn_add_numbers",
+    "description": "Add two numbers together and return their sum.",
+    "parameters": {
+      "a": {"type": "number"},
+      "b": {"type": "number"}
+    },
+    "returns": {"type": "number"}
+  },
+  {
+    "name": "fn_greet",
+    "description": "Generate a greeting message for a person by name.",
+    "parameters": {
+      "name": {"type": "string"}
+    },
+    "returns": {"type": "string"}
+  },
+  {
+    "name": "fn_reverse_string",
+    "description": "Reverse a string and return the reversed result.",
+    "parameters": {
+      "s": {"type": "string"}
+    },
+    "returns": {"type": "string"}
+  },
+  {
+    "name": "fn_multiply_numbers",
+    "description": "Multiply two numbers and return their product.",
+    "parameters": {
+      "x": {"type": "number"},
+      "y": {"type": "number"}
+    },
+    "returns": {"type": "number"}
+  },
+  {
+    "name": "fn_is_palindrome",
+    "description": "Check if a string is a palindrome.",
+    "parameters": {
+      "text": {"type": "string"}
+    },
+    "returns": {"type": "boolean"}
+  }
+]
